@@ -22,6 +22,7 @@ Repository for my DS5690 paper presentation on “Chain-of-Thought Prompting Eli
 - [Resources](#resources)
 - [Citation](#citation)
 
+
 ## Overview
 
 **Problem.** Large language models (LLMs) are fluent but often fail on tasks that require multi-step reasoning (arithmetic, symbolic manipulation, logical inference).
@@ -59,14 +60,13 @@ Repository for my DS5690 paper presentation on “Chain-of-Thought Prompting Eli
 
 ---
 
-## Step 7 — Results
 
-Summarize the headline gains. Do not over-claim; keep it high-level.
-
-```markdown
 ## Results
 
 High-level summary from the paper (see original for full details):
+<img width="624" height="468" alt="Screenshot 2025-11-05 at 12 44 21 PM" src="https://github.com/user-attachments/assets/88b67b04-2172-4592-82e1-6f214d1d533d" />
+
+<img width="643" height="306" alt="Screenshot 2025-11-05 at 12 46 57 PM" src="https://github.com/user-attachments/assets/6063c66e-79ca-4e2c-a226-b2d9637c0c26" />
 
 | Benchmark (examples)        | Standard Prompt | CoT Prompt |
 |-----------------------------|----------------:|-----------:|
@@ -79,7 +79,7 @@ Observations:
 - CoT improves performance across arithmetic, symbolic, and commonsense tasks.
 - Gains are most pronounced at large model scales (emergent behavior).
 - Reasoning traces make intermediate steps inspectable.
-```
+
 
 ## Critical Analysis
 
