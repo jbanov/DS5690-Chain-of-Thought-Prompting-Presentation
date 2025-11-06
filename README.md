@@ -18,7 +18,6 @@ Repository for my DS5690 paper presentation on “Chain-of-Thought Prompting Eli
 - [Critical Analysis](#critical-analysis)
 - [Impact and Follow-up Work](#impact-and-follow-up-work)
 - [Live Demo](#live-demo)
-- [Repo Structure](#repo-structure)
 - [Resources](#resources)
 - [Citation](#citation)
 
@@ -57,6 +56,53 @@ Repository for my DS5690 paper presentation on “Chain-of-Thought Prompting Eli
 - Final answer is extracted from the reasoning trace (heuristics or a follow-up instruction).
 
 
+## Formal Pseudocode
+
+*Note:* Chain-of-Thought (CoT) prompting introduces **no architectural or training modification** to the Transformer model. The change occurs entirely at the **inference/prompting stage**. The pseudocode below adapts Algorithm 14 (*DInference*) from *Phuong & Hutter (2022)* to show where the CoT cue is inserted. Algorithms 10 and 14 from that paper (shown in the figures below) describe the baseline Transformer and its inference loop.
+
+**Reference Algorithms (Phuong & Hutter, 2022)**  
+- Algorithm 10 — *Decoder-Only Transformer (GPT)*  
+- Algorithm 14 — *Prompting and Inference Procedure*
+
+<img width="727" height="544" alt="Screenshot 2025-11-06 at 8 46 50 AM" src="https://github.com/user-attachments/assets/2af7761b-c45a-41f0-9d6b-8dff18cff4a5" />
+
+<img width="355" height="355" alt="Screenshot 2025-11-06 at 8 46 18 AM" src="https://github.com/user-attachments/assets/f03e304e-37fe-4c4f-854d-2de0f52b63e8" />
+
+*Figures: Baseline Transformer architecture (Algorithm 10) and standard inference (Algorithm 14) from Phuong & Hutter (2022). CoT modifies only the input prompt in Step 1 of inference.*
+
+**Algorithm:** `CoTInference(x, θ̂)` — prompting a trained Transformer to elicit reasoning traces through a Chain-of-Thought cue.
+
+**Input:**  
+ `x ∈ V*` — user query or question  
+ `θ̂` — trained Transformer parameters  
+
+**Output:**  
+ `y ∈ V*` — generated reasoning trace and final answer  
+
+**Hyperparameters:**  
+ `τ ∈ (0, ∞)` — sampling temperature  
+ `L_gen ∈ ℕ` — number of generation steps  
+
+Compose the prompt
+prompt ← x + " Let's think step by step."
+
+Tokenize input
+tokens ← tokenize(prompt)
+
+Iteratively generate reasoning and answer
+for i in [1 : L_gen]:
+P ← DTransformer(tokens | θ̂) # forward pass
+p_next ← P[:, len(tokens)] # next-token distribution
+y_i ← sample(p_next, temperature = τ)
+tokens ← [tokens, y_i]
+if EOS_token(y_i): break
+
+Return decoded text
+y ← detokenize(tokens)
+return y
+
+**Comment:**  
+Relative to *Algorithm 14: DInference*, this procedure prepends a short reasoning cue (e.g., “Let’s think step by step.”) before inference, guiding the model to generate intermediate reasoning steps in natural language before the final answer.
 
 ---
 
