@@ -152,7 +152,6 @@ High-level summary from the paper (see original for full details):
 
 ### Scale Dependence of Chain-of-Thought Prompting
 
-### Scale Dependence of Chain-of-Thought Prompting
 
 | **Model** | **Parameters** | **Benchmark** | **Standard Prompt (%)** | **CoT Prompt (%)** | **Observation** |
 |------------|----------------|----------------|--------------------------|--------------------|-----------------|
