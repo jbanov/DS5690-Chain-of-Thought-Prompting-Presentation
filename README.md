@@ -169,21 +169,15 @@ Limitations
 - Reasoning traces may be verbose, inconsistent, or partially incorrect. (stuck chain)
 - Automatic evaluation of reasoning quality is impossible in this form.
 
-What could be improved or extended
-- Self-consistency: sample multiple CoTs and aggregate for robustness.
-- Program-of-Thought and tool use: verify steps with code, calculators, or external tools.
-- Multimodal extensions: align step-by-step reasoning across text and images.
-
-
 ## Impact and Follow-up Work
+
+This paper marked a turning point in how researchers conceptualize reasoning in large language models. Before CoT, reasoning was viewed as an architectural or training problem—something that required fine-tuning or symbolic modules. Wei et al. (2022) showed that *reasoning can be elicited purely through language*, transforming prompting from a surface-level technique into a pathway for genuine logical and numerical reasoning. This insight reshaped prompting research and established interpretability and step-by-step reasoning as central goals for the next generation of LLMs.
 
 The paper catalyzed a research line on explicit reasoning with LLMs. Representative follow-ups include:
 - Self-Consistency (Wang et al., 2022): sample multiple CoTs and vote.
 - Tree-of-Thought (Yao et al., 2023): search over multiple reasoning paths.
 - Tool-augmented reasoning (e.g., Toolformer, 2023): call tools during reasoning.
 - Reasoning-oriented training (2024–): finetuning/recipes to make CoT more reliable.
-
-Overall impact: shifted practice from answer-only prompting to reasoning-then-answer prompting for complex tasks.
 
 Future Directions:
 - Interactive or Reflective CoT: Develop models that revise or critique their own reasoning chains before finalizing an answer. This could reduce logical inconsistencies and hallucinations.
@@ -197,7 +191,6 @@ The next frontier for CoT-style prompting lies in making reasoning more self-cor
 ## Live Demo
 
 Notebook: `demo/cot_demo.ipynb`
-
 
 ## Resources
 
