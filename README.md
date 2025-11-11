@@ -11,8 +11,6 @@ Repository for my DS5690 paper presentation on “Chain-of-Thought Prompting Eli
 
 ## Table of Contents
 - [Overview](#overview)
-- [Key Questions for the Audience](#key-questions-for-the-audience)
-- [Method Summary](#method-summary)
 - [Formal Pseudocode](#formal-pseudocode)
 - [Results](#results)
 - [Critical Analysis](#critical-analysis)
@@ -46,44 +44,6 @@ Interpretability. The generated reasoning chains allow researchers to trace how 
 
 **One-sentence summary:** Chain-of-Thought prompting transforms LLMs from “answer generators” into “step-by-step reasoners,” improving multi-step problem solving without retraining or architectural changes.
 
-## Key Questions for the Audience
-
-1) Why might CoT prompting yield strong gains only at large model scales?  
-<details>
-<summary><i>Click to reveal possible discussion points</i></summary>
-
-- Larger models have **higher capacity** to represent and follow complex reasoning paths.  
-- CoT relies on **emergent behavior**—reasoning patterns that only appear once models reach a certain scale.  
-- Smaller models can mimic reasoning linguistically but lack the **latent computation depth** to perform it reliably.  
-
-</details>
-
-2) How could CoT prompting be adapted for multimodal tasks (e.g., vision-language reasoning)?  
-<details>
-<summary><i>Click to reveal possible discussion points</i></summary>
-
-- Integrate **visual reasoning steps** using natural-language descriptions of image features.  
-- Use CoT-like prompting within **multimodal architectures** (e.g., “Let’s describe what we see, then reason step by step.”)  
-- Combine CoT with **visual grounding** or **tool use** to support spatial reasoning.  
-
-</details>
-
-
-## Method Summary
-
-**Standard prompting**
-- Input: question
-- Output: direct answer
-
-**Chain-of-Thought prompting**
-- Input: question + short reasoning cue (e.g., “Let’s think step by step.”)
-- Output: free-form reasoning trace → final answer
-
-**Key points**
-- No change to network architecture or training.
-- The difference lies entirely in prompting and decoding.
-- Final answer is extracted from the reasoning trace (heuristics or a follow-up instruction).
-
 
 ## Formal Pseudocode
 
@@ -112,26 +72,43 @@ Interpretability. The generated reasoning chains allow researchers to trace how 
  `τ ∈ (0, ∞)` — sampling temperature  
  `L_gen ∈ ℕ` — number of generation steps  
 
-Compose the prompt
-prompt ← x + " Let's think step by step."
+Algorithm:
 
-Tokenize input
-tokens ← tokenize(prompt)
+1. Compose prompt
+$\text{prompt} \leftarrow x ; \Vert ; \text{+" Let’s think step by step."}$
 
-Iteratively generate reasoning and answer
-for i in [1 : L_gen]:
-P ← DTransformer(tokens | θ̂) # forward pass
-p_next ← P[:, len(tokens)] # next-token distribution
-y_i ← sample(p_next, temperature = τ)
-tokens ← [tokens, y_i]
-if EOS_token(y_i): break
+2. Tokenize input
+$\text{tokens} \leftarrow \text{tokenize}(\text{prompt})$
 
-Return decoded text
-y ← detokenize(tokens)
-return y
+3. Iteratively generate reasoning and answer
+  for $i = 1, \ldots, L_{\text{gen}}$ do
+    $P \leftarrow \text{DTransformer}(\text{tokens} \mid \hat{\theta})$ → Forward pass
+    $p_{\text{next}} \leftarrow P[:, |\text{tokens}|]$ → Next-token distribution
+    $y_i \leftarrow \text{sample}(p_{\text{next}}, \text{temperature} = \tau)$
+    $\text{tokens} \leftarrow [\text{tokens}, y_i]$
+    if $\text{EOS}(y_i)$ then break
+    end for
 
-**Comment:**  
-Relative to *Algorithm 14: DInference*, this procedure prepends a short reasoning cue (e.g., “Let’s think step by step.”) before inference, guiding the model to generate intermediate reasoning steps in natural language before the final answer.
+4. Return decoded text
+$y \leftarrow \text{detokenize}(\text{tokens})$
+
+5. return $y$
+
+Comment:
+Relative to Algorithm 14: DInference (standard Transformer decoding), this procedure prepends a short reasoning cue (e.g., “Let’s think step by step.”) before inference.
+This change occurs entirely at the prompting stage, guiding the model to produce intermediate reasoning steps before its final answer, without modifying model weights or architecture.
+
+**Question 1:**  
+1) What is the difference in architecture between a Chain-of-Thought (CoT) model and a standard language model, and what are some alternative ways—beyond the method used in the paper—to create a CoT-capable model?  
+<details>
+<summary><i>Click to reveal possible discussion points</i></summary>
+
+- **No architectural change:** CoT prompting uses the *same Transformer architecture* as standard models; the difference lies entirely in how the *prompt* elicits reasoning, not in the network design or training.  
+- **Prompt engineering:** CoT adds a short cue such as *“Let’s think step by step”* to encourage explicit intermediate reasoning before the final answer.  
+- **Fine-tuning approaches:** Instead of prompting, a model can be **fine-tuned** on datasets that include reasoning traces to internalize CoT behavior.  
+- **Reinforcement or self-training:** Use **Reinforcement Learning from CoT outputs** or **self-distillation**, where a base model learns from its own reasoning examples.  
+
+</details>
 
 ---
 
@@ -139,7 +116,8 @@ Relative to *Algorithm 14: DInference*, this procedure prepends a short reasonin
 ## Results
 
 High-level summary from the paper (see original for full details):
-<img width="624" height="468" alt="Screenshot 2025-11-05 at 12 44 21 PM" src="https://github.com/user-attachments/assets/88b67b04-2172-4592-82e1-6f214d1d533d" />
+
+<img width="643" height="306" alt="Screenshot 2025-11-10 at 6 34 57 PM" src="https://github.com/user-attachments/assets/402f8bbe-701c-4d93-9f07-8b1ad36ce272" />
 
 <img width="643" height="306" alt="Screenshot 2025-11-05 at 12 46 57 PM" src="https://github.com/user-attachments/assets/6063c66e-79ca-4e2c-a226-b2d9637c0c26" />
 
@@ -162,11 +140,16 @@ High-level summary from the paper (see original for full details):
 **Summary.**  
 Performance under Chain-of-Thought prompting remains flat for small and mid-sized models but rises sharply at the **540 B-parameter** scale, confirming reasoning as an **emergent capability** in large language models.
 
+**Question 2:**  
+1) Why might CoT prompting yield strong gains only at large model scales?  
+<details>
+<summary><i>Click to reveal possible discussion points</i></summary>
 
+- Larger models have **higher capacity** to represent and follow complex reasoning paths.  
+- CoT relies on **emergent behavior**—reasoning patterns that only appear once models reach a certain scale.  
+- Smaller models can mimic reasoning linguistically but lack the **latent computation depth** to perform it reliably.  
 
-**Summary.**  
-Performance under Chain-of-Thought prompting remains flat for small and mid-sized models but rises sharply at the **540 B-parameter** scale, confirming reasoning as an **emergent capability** of large language models.
-
+</details>
 
 Observations:
 - CoT improves performance across arithmetic, symbolic, and commonsense tasks.
